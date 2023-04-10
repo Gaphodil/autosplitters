@@ -1,0 +1,1 @@
+Repo for future autosplitters. More info can be found [here](https://github.com/LiveSplit/LiveSplit.AutoSplitters).
