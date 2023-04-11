@@ -22,7 +22,7 @@ state("BONK", "1.2.2")
     byte800 gameFlags : 0x00446CAC, 0x4, 0x8, 0x50, 0x14, 0xB48;
 
     // 100 coins but only 0-19 (red) and 76-83 (blue) in use
-    byte1600 collectedCoins : 0x00445B7C, 0x794, 0x38, 0x4, 0x4, 0x4, 0x840;
+    byte1600 collectedCoins : 0x00445C40, 0x60, 0x10, 0x124, 0x0, 0x4, 0x4, 0xCC8;
 }
 
 startup
@@ -46,20 +46,21 @@ startup
     settings.Add("byRoom", true, "Split Important Rooms");
     settings.SetToolTip("byRoom", "Split if the player's room id matches that of important locations.");
 
+    settings.Add("glass1", false, "Glass 1", "byRoom"); // rGlass1, 46
+    settings.Add("nuclear1", false, "Nuclear 1", "byRoom"); // rBonk8, 72
     settings.Add("grav1", false, "Gravity 1", "byRoom"); // rGravity1, 103
     settings.Add("arrow1", false, "Arrow 1", "byRoom"); // rArrow1, 128
-    settings.Add("glass1", false, "Glass 1", "byRoom"); // rGlass1, 46
-    settings.Add("slime1", false, "Slime 1", "byRoom"); // rSlime1, 166
     settings.Add("dumbbell1", false, "Dumbbell 1", "byRoom"); // rDumbbell1, 149
-    settings.Add("nuclear1", false, "Nuclear 1", "byRoom"); // rBonk8, 72
+    settings.Add("slime1", false, "Slime 1", "byRoom"); // rSlime1, 166
     settings.Add("oldExpo", false, "Old Expos", "byRoom"); // rHubOldExpos, 24 or flag13
+    settings.Add("oldLab1", false, "Old Lab - First Platforming Room", "byRoom"); // rOldLabArrow, 213
     settings.Add("glassBoss1Room", true, "Glass Boss 1", "byRoom"); // rGlass8, 54
     settings.Add("glassBoss2Room", true, "Glass Boss 2", "byRoom"); // rGlass11, 67
     settings.Add("gravMeteor", true, "Meteor Escape", "byRoom"); // rGravityH7, 123
     settings.Add("slimeCrab", true, "Crab Boss", "byRoom"); // rSlimeHCrabBoss, 195
     settings.Add("slimeCrab2", false, "Crab Boss Rematch", "byRoom"); // rSlimeHCrabRematchBoss, 200
     settings.Add("oBoss", true, "O Boss", "byRoom"); // rOldLabFinalBoss, 220
-    vars.roomCount = 13;
+    vars.roomCount = 14;
 
     // MISCELLANEA
     settings.Add("byNullSecrets", true, "Split NULLDRIVER Switches"); // flags 3-8
@@ -72,14 +73,24 @@ startup
     settings.SetToolTip("splitEnd", "Choose a final room to split in, and which ending is being gone for.");
 
     settings.Add("namedEndingB", true, "Ending B allowed", "splitEnd"); // flag 32 = 0
-    settings.SetToolTip("namedEndingB", "Must be disabled to only split on ending C.");
+    settings.Add("creditsRoomB", true, "Split at Credits Room", "namedEndingB"); // rCredits1, 223
+    settings.Add("postCreditsRoomB", false, "Split at Post-Credits Room", "namedEndingB"); // rCredits2, 224
+    settings.SetToolTip("postCreditsRoomB", "(Currently no way to end when BONK slide appears)");
+    settings.Add("namedEndingRoomB", false, "Split at Ending Label", "namedEndingB"); // rCredits3, 225
+
     settings.Add("namedEndingC", false, "Ending C allowed", "splitEnd"); // flag 32 = 1
+    settings.Add("creditsRoomC", false, "Split at Credits Room", "namedEndingC");
+    settings.Add("postCreditsRoomC", false, "Split at Post-Credits Room", "namedEndingC");
+    settings.SetToolTip("postCreditsRoomC", "(Currently no way to end when BONK slide appears)");
+    settings.Add("namedEndingRoomC", false, "Split at Ending Label", "namedEndingC");
+    
     settings.Add("namedEndingD", false, "Ending D allowed", "splitEnd"); // flag 32 = 2
+    settings.Add("creditsRoomD", false, "Split at Credits Room", "namedEndingD");
+    settings.Add("postCreditsRoomD", false, "Split at Post-Credits Room", "namedEndingD");
+    settings.SetToolTip("postCreditsRoomD", "(Currently no way to end when BONK slide appears)");
+    settings.Add("namedEndingRoomD", false, "Split at Ending Label", "namedEndingD");
+
     settings.Add("jokeEnding", false, "Ending G allowed", "splitEnd"); // rDumbbellGym1Secret2, 154
-    settings.Add("creditsRoom", true, "Split at Credits Room", "splitEnd"); // rCredits1, 223
-    settings.Add("postCreditsRoom", false, "Split at Post-Credits Room", "splitEnd"); // rCredits2, 224
-    settings.SetToolTip("postCreditsRoom", "(Currently no way to end when BONK slide appears)");
-    settings.Add("namedEnding", false, "Split at Ending Label (i.e. B, C, D)", "splitEnd"); // rCredits3, 225
 
     settings.Add("autoReset", false, "Auto Reset");
     settings.SetToolTip("autoReset", "Resets if IGT = 0.00, most often when hitting F2 to return to main menu.");
@@ -142,7 +153,6 @@ split
     double[] newCoins  = vars.ConvertBytes(current.collectedCoins);
     int oldRoom = old.roomId;
     int newRoom = current.roomId;
-    double[] rooms = new double[] { 103, 128, 46, 166, 149, 72, 24, 54, 67, 123, 195, 200, 220 };
 
     if (settings["byItem"])
     {
@@ -211,8 +221,9 @@ split
     }
     if (settings["byRoom"])
     {
+        double[] rooms = new double[] { 46, 72, 103, 128, 149, 166,  24, 213, 54, 67, 123, 195, 200, 220 };
         string[] roomOpts = new string[] { 
-            "grav1", "arrow1", "glass1", "slime1", "dumbbell1", "nuclear1", "oldExpo",
+            "glass1", "nuclear1", "grav1", "arrow1", "dumbbell1", "slime1", "oldExpo", "oldLab1",
             "glassBoss1Room", "glassBoss2Room", "gravMeteor", "slimeCrab", "slimeCrab2", "oBoss" };
         for (int i = 0; i < rooms.Length; i++)
         {
@@ -255,14 +266,19 @@ split
         if (settings["jokeEnding"] && oldRoom != 154 && newRoom == 154)
             return true;
         
-        if ((settings["namedEndingB"] && newFlags[32] == 0) ||
-            (settings["namedEndingC"] && newFlags[32] == 1) ||
-            (settings["namedEndingD"] && newFlags[32] == 2))
+        var ends = new string[] { "B", "C", "D" };
+        var endrooms = new string[] { "creditsRoom", "postCreditsRoom", "namedEndingRoom" };
+
+        for (int i = 0; i < ends.Length; i++)
         {
-            if ((settings["creditsRoom"] && oldRoom != 223 && newRoom == 223) ||
-                (settings["postCreditsRoom"]  && oldRoom != 224 && newRoom == 224) ||
-                (settings["namedEnding"] && oldRoom != 225 && newRoom == 225))
-                return true;
+            if (settings["namedEnding" + ends[i]] && newFlags[32] == i)
+            {
+                for (int j = 0; j < endrooms.Length; j++)
+                {
+                    if (settings[endrooms[j] + ends[i]] && oldRoom != 223 + j && newRoom == 223 + j)
+                        return true;
+                }
+            }
         }
     }
 }
