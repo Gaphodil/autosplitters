@@ -17,7 +17,7 @@ state("BONK", "1.2.2")
     byte196 bossItems : 0x00446CE0, 0x0, 0x10, 0x3C, 0x2C, 0x188, 0x30, 0x300;
     byte196 projectorSlides : 0x00446CE0, 0x0, 0x10, 0x3C, 0x2C, 0x188, 0x30, 0x280;
 
-    // 50 gameflags but only 34 in use (skipping index 0)
+    // 50 gameflags but only 34 in use
     // 16*50 = 800
     byte800 gameFlags : 0x00446CAC, 0x4, 0x8, 0x50, 0x14, 0xB48;
 
@@ -33,22 +33,33 @@ startup
 
     settings.Add("bossItems", true, "Odd Snacks", "byItem");
     settings.Add("projectorSlides", true, "Projector Slides", "byItem");
-    settings.Add("cookie", false, "Cookie", "byItem"); // flag 27
+    settings.Add("manorkey1", false, "Manor Key - Bottom", "byItem"); // flag 10
+    settings.Add("manorkey2", false, "Manor Key - Top", "byItem"); // flag 11
+    settings.Add("oldkey1", false, "Old Expo Keycard - EZ", "byItem"); // flag 14
+    settings.Add("oldkey2", false, "Old Expo Keycard - Silver", "byItem"); // flag 15
     settings.Add("walkie1", true, "Old Lab Walkie-Talkie", "byItem"); // flag 16
     settings.Add("walkie2", false, "Surface Walkie-Talkie", "byItem"); // flag 17
     settings.Add("nulldriver", true, "NULLDRIVER", "byItem"); // flag 20
+    settings.Add("cookie", false, "Cookie", "byItem"); // flag 27
 
     // ROOMS
     settings.Add("byRoom", true, "Split Important Rooms");
-    settings.SetToolTip("byRoom", "Split if the player's room id matches that of important locations (mostly bosses).");
+    settings.SetToolTip("byRoom", "Split if the player's room id matches that of important locations.");
 
+    settings.Add("grav1", false, "Gravity 1", "byRoom"); // rGravity1, 103
+    settings.Add("arrow1", false, "Arrow 1", "byRoom"); // rArrow1, 128
+    settings.Add("glass1", false, "Glass 1", "byRoom"); // rGlass1, 46
+    settings.Add("slime1", false, "Slime 1", "byRoom"); // rSlime1, 166
+    settings.Add("dumbbell1", false, "Dumbbell 1", "byRoom"); // rDumbbell1, 149
+    settings.Add("nuclear1", false, "Nuclear 1", "byRoom"); // rBonk8, 72
+    settings.Add("oldExpo", false, "Old Expos", "byRoom"); // rHubOldExpos, 24 or flag13
     settings.Add("glassBoss1Room", true, "Glass Boss 1", "byRoom"); // rGlass8, 54
     settings.Add("glassBoss2Room", true, "Glass Boss 2", "byRoom"); // rGlass11, 67
     settings.Add("gravMeteor", true, "Meteor Escape", "byRoom"); // rGravityH7, 123
     settings.Add("slimeCrab", true, "Crab Boss", "byRoom"); // rSlimeHCrabBoss, 195
     settings.Add("slimeCrab2", false, "Crab Boss Rematch", "byRoom"); // rSlimeHCrabRematchBoss, 200
     settings.Add("oBoss", true, "O Boss", "byRoom"); // rOldLabFinalBoss, 220
-    vars.roomCount = 6;
+    vars.roomCount = 13;
 
     // MISCELLANEA
     settings.Add("byNullSecrets", true, "Split NULLDRIVER Switches"); // flags 3-8
@@ -87,7 +98,6 @@ startup
     vars.noRepeatRooms = noRepeatRooms;
 
     // derived from https://stackoverflow.com/questions/7832120
-    // doubles are 8 bytes but gms separates each by another 8
     Func<byte[], double[]> ConvertBytes = data =>
     {
         double[] doubles = new double[data.Length / 16];
@@ -132,7 +142,7 @@ split
     double[] newCoins  = vars.ConvertBytes(current.collectedCoins);
     int oldRoom = old.roomId;
     int newRoom = current.roomId;
-    double[] rooms = new double[] { 54, 67, 123, 195, 200, 220 };
+    double[] rooms = new double[] { 103, 128, 46, 166, 149, 72, 24, 54, 67, 123, 195, 200, 220 };
 
     if (settings["byItem"])
     {
@@ -158,9 +168,24 @@ split
                 }
             }
         }
-        if (settings["cookie"] && oldFlags[27] == 0 && newFlags[27] == 1 && !vars.noRepeatFlags[27])
+        if (settings["manorkey1"] && oldFlags[10] == 0 && newFlags[10] == 1 && !vars.noRepeatFlags[10])
         {
-            vars.noRepeatFlags[27] = true;
+            vars.noRepeatFlags[10] = true;
+            return true;
+        }
+        if (settings["manorkey2"] && oldFlags[11] == 0 && newFlags[11] == 1 && !vars.noRepeatFlags[11])
+        {
+            vars.noRepeatFlags[11] = true;
+            return true;
+        }
+        if (settings["oldkey1"] && oldFlags[14] == 0 && newFlags[14] == 1 && !vars.noRepeatFlags[14])
+        {
+            vars.noRepeatFlags[14] = true;
+            return true;
+        }
+        if (settings["oldkey2"] && oldFlags[15] == 0 && newFlags[15] == 1 && !vars.noRepeatFlags[15])
+        {
+            vars.noRepeatFlags[15] = true;
             return true;
         }
         if (settings["walkie1"] && oldFlags[16] == 0 && newFlags[16] == 1 && !vars.noRepeatFlags[16])
@@ -178,10 +203,17 @@ split
             vars.noRepeatFlags[20] = true;
             return true;
         }
+        if (settings["cookie"] && oldFlags[27] == 0 && newFlags[27] == 1 && !vars.noRepeatFlags[27])
+        {
+            vars.noRepeatFlags[27] = true;
+            return true;
+        }
     }
     if (settings["byRoom"])
     {
-        string[] roomOpts = new string[] { "glassBoss1Room", "glassBoss2Room", "gravMeteor", "slimeCrab", "slimeCrab2", "oBoss" };
+        string[] roomOpts = new string[] { 
+            "grav1", "arrow1", "glass1", "slime1", "dumbbell1", "nuclear1", "oldExpo",
+            "glassBoss1Room", "glassBoss2Room", "gravMeteor", "slimeCrab", "slimeCrab2", "oBoss" };
         for (int i = 0; i < rooms.Length; i++)
         {
             if (settings[roomOpts[i]] && oldRoom != rooms[i] && newRoom == rooms[i] && !vars.noRepeatRooms[i])
