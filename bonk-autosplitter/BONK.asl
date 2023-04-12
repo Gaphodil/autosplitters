@@ -1,28 +1,28 @@
-state("BONK", "1.2.2")
+state("BONK")
 {
     // i've heard SignatureScanner can find current room by name but i don't know how it works
     int roomId : 0x6561E0;
     
-    double microseconds : 0x0043550C, 0x0, 0x60, 0x10, 0x3F4, 0x2C0;
-    double seconds      : 0x0043550C, 0x0, 0x60, 0x10, 0x3F4, 0x2D0;
-    double deaths       : 0x0043550C, 0x0, 0x60, 0x10, 0x3F4, 0x2E0;
+    double microseconds : 0x00445C40, 0x60, 0x10, 0x13C, 0x90;
+    double seconds      : 0x00445C40, 0x60, 0x10, 0x13C, 0xA0;
+    double deaths       : 0x00445C40, 0x60, 0x10, 0x13C, 0xB0;
 
-    double gameStarted  : 0x0043550C, 0x0, 0x60, 0x10, 0x3F4, 0x200;
+    double gameStarted  : 0x00445C40, 0x60, 0x10, 0x13C, -48;
 
     // only endings C, D
-    double gameClear    : 0x0043550C, 0x0, 0x60, 0x10, 0x3F4, 0x220;
+    double gameClear    : 0x00445C40, 0x60, 0x10, 0x13C, -16;
 
     // num order: GlassShard, BonkFuelRod, GravitySun, ArrowDorito, SmallDumbell, SlimySpoon
     // stored as double array
-    byte196 bossItems : 0x00446CE0, 0x0, 0x10, 0x3C, 0x2C, 0x188, 0x30, 0x300;
-    byte196 projectorSlides : 0x00446CE0, 0x0, 0x10, 0x3C, 0x2C, 0x188, 0x30, 0x280;
+    byte196 bossItems       : 0x00445C44, 0x60, 0x10, 0x154, 0x20, 0x4, 0x14, 0x180;
+    byte196 projectorSlides : 0x00445C44, 0x60, 0x10, 0x154, 0x20, 0x4, 0x14, 0x100;
 
-    // 50 gameflags but only 34 in use
+    // 50 gameflags but only 35 in use
     // 16*50 = 800
-    byte800 gameFlags : 0x00446CAC, 0x4, 0x8, 0x50, 0x14, 0xB48;
+    byte800 gameFlags : 0x00446CAC, 0x4, 0x8, 0x50, 0x14, 0xCA0;
 
     // 100 coins but only 0-19 (red) and 76-83 (blue) in use
-    byte1600 collectedCoins : 0x00445C40, 0x60, 0x10, 0x124, 0x0, 0x4, 0x4, 0xCC8;
+    byte1600 collectedCoins : 0x00445C40, 0x60, 0x10, 0x154, 0x20, 0x4, 0x4, 0x0;
 }
 
 startup
@@ -39,6 +39,7 @@ startup
     settings.Add("oldkey2", false, "Old Expo Keycard - Silver", "byItem"); // flag 15
     settings.Add("walkie1", true, "Old Lab Walkie-Talkie", "byItem"); // flag 16
     settings.Add("walkie2", false, "Surface Walkie-Talkie", "byItem"); // flag 17
+    settings.SetToolTip("walkie2", "Only at bottom of chute.");
     settings.Add("nulldriver", true, "NULLDRIVER", "byItem"); // flag 20
     settings.Add("cookie", false, "Cookie", "byItem"); // flag 27
 
@@ -66,6 +67,8 @@ startup
     settings.Add("byNullSecrets", true, "Split NULLDRIVER Switches"); // flags 3-8
     settings.SetToolTip("byNullSecrets", "Split on glitch room secret switches.");
 
+    settings.Add("murder", true, "Split on O's Death"); // flag 28
+
     settings.Add("byRedCoin", false, "Split Red Coins");
     settings.Add("byBlueCoin", false, "Split Blue Coins");
 
@@ -73,27 +76,24 @@ startup
     settings.SetToolTip("splitEnd", "Choose a final room to split in, and which ending is being gone for.");
 
     settings.Add("namedEndingB", true, "Ending B allowed", "splitEnd"); // flag 32 = 0
-    settings.Add("creditsRoomB", true, "Split at Credits Room", "namedEndingB"); // rCredits1, 223
+    settings.Add("creditsRoomB", false, "Split at Credits Room", "namedEndingB"); // rCredits1, 223
     settings.Add("postCreditsRoomB", false, "Split at Post-Credits Room", "namedEndingB"); // rCredits2, 224
-    settings.SetToolTip("postCreditsRoomB", "(Currently no way to end when BONK slide appears)");
+    settings.Add("postCreditsTitleCardB", true, "Split at Post-Credits Title Card (1.2.3+)", "namedEndingB"); // flag 35 (ty uber)
     settings.Add("namedEndingRoomB", false, "Split at Ending Label", "namedEndingB"); // rCredits3, 225
 
     settings.Add("namedEndingC", false, "Ending C allowed", "splitEnd"); // flag 32 = 1
     settings.Add("creditsRoomC", false, "Split at Credits Room", "namedEndingC");
     settings.Add("postCreditsRoomC", false, "Split at Post-Credits Room", "namedEndingC");
-    settings.SetToolTip("postCreditsRoomC", "(Currently no way to end when BONK slide appears)");
+    settings.Add("postCreditsTitleCardC", true, "Split at Post-Credits Title Card (1.2.3+)", "namedEndingC");
     settings.Add("namedEndingRoomC", false, "Split at Ending Label", "namedEndingC");
     
     settings.Add("namedEndingD", false, "Ending D allowed", "splitEnd"); // flag 32 = 2
     settings.Add("creditsRoomD", false, "Split at Credits Room", "namedEndingD");
     settings.Add("postCreditsRoomD", false, "Split at Post-Credits Room", "namedEndingD");
-    settings.SetToolTip("postCreditsRoomD", "(Currently no way to end when BONK slide appears)");
+    settings.Add("postCreditsTitleCardD", true, "Split at Post-Credits Title Card (1.2.3+)", "namedEndingD");
     settings.Add("namedEndingRoomD", false, "Split at Ending Label", "namedEndingD");
 
     settings.Add("jokeEnding", false, "Ending G allowed", "splitEnd"); // rDumbbellGym1Secret2, 154
-
-    settings.Add("autoReset", false, "Auto Reset");
-    settings.SetToolTip("autoReset", "Resets if IGT = 0.00, most often when hitting F2 to return to main menu.");
 
     // SPLITTER FUNCTIONALITY
 
@@ -135,22 +135,13 @@ start
 reset
 {
     // return to title screen
-    if (settings["autoReset"])
-    {
-        return (old.gameStarted == 1 && current.gameStarted == 0);
-    }
+    return (old.gameStarted == 1 && current.gameStarted == 0);
 }
 
 split
 {
-    double[] oldItems  = vars.ConvertBytes(old.bossItems);
-    double[] newItems  = vars.ConvertBytes(current.bossItems);
-    double[] oldSlides = vars.ConvertBytes(old.projectorSlides);
-    double[] newSlides = vars.ConvertBytes(current.projectorSlides);
     double[] oldFlags  = vars.ConvertBytes(old.gameFlags);
     double[] newFlags  = vars.ConvertBytes(current.gameFlags);
-    double[] oldCoins  = vars.ConvertBytes(old.collectedCoins);
-    double[] newCoins  = vars.ConvertBytes(current.collectedCoins);
     int oldRoom = old.roomId;
     int newRoom = current.roomId;
 
@@ -158,6 +149,8 @@ split
     {
         if (settings["bossItems"])
         {
+            double[] oldItems  = vars.ConvertBytes(old.bossItems);
+            double[] newItems  = vars.ConvertBytes(current.bossItems);
             for (int i = 0; i < oldItems.Length; i++)
             {
                 if (oldItems[i] == 0 && newItems[i] == 1 && !vars.noRepeatItems[i])
@@ -169,6 +162,8 @@ split
         }
         if (settings["projectorSlides"])
         {
+            double[] oldSlides = vars.ConvertBytes(old.projectorSlides);
+            double[] newSlides = vars.ConvertBytes(current.projectorSlides);
             for (int i = 0; i < oldSlides.Length; i++)
             {
                 if (oldSlides[i] == 0 && newSlides[i] == 1 && !vars.noRepeatSlides[i])
@@ -245,20 +240,33 @@ split
             }
         }
     }
-    if (settings["byRedCoin"])
+    if (settings["murder"])
     {
-        for (int i = 0; i <= 19; i++)
+        if (oldFlags[28] == 0 && newFlags[28] == 1 && !vars.noRepeatFlags[28])
         {
-            if (oldCoins[i] == 0 && newCoins[i] == 1)
-                return true;
+            vars.noRepeatFlags[28] = true;
+            return true;
         }
     }
-    if (settings["byBlueCoin"])
+    if (settings["byRedCoin"] || settings["byBlueCoin"])
     {
-        for (int i = 76; i <= 83; i++)
+        double[] oldCoins  = vars.ConvertBytes(old.collectedCoins);
+        double[] newCoins  = vars.ConvertBytes(current.collectedCoins);
+        if (settings["byRedCoin"])
         {
-            if (oldCoins[i] == 0 && newCoins[i] == 1)
-                return true;
+            for (int i = 0; i <= 19; i++)
+            {
+                if (oldCoins[i] == 0 && newCoins[i] == 1)
+                    return true;
+            }
+        }
+        if (settings["byBlueCoin"])
+        {
+            for (int i = 76; i <= 83; i++)
+            {
+                if (oldCoins[i] == 0 && newCoins[i] == 1)
+                    return true;
+            }
         }
     }
     if (settings["splitEnd"])  
@@ -278,6 +286,8 @@ split
                     if (settings[endrooms[j] + ends[i]] && oldRoom != 223 + j && newRoom == 223 + j)
                         return true;
                 }
+                if (settings["postCreditsTitleCard" + ends[i]] && oldFlags[35] == 0 && newFlags[35] == 1)
+                    return true; // repeats of this flag allowed
             }
         }
     }
