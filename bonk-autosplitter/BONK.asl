@@ -37,7 +37,7 @@ startup
     settings.Add("manorkey2", false, "Manor Key - Top", "byItem"); // flag 11
     settings.Add("oldkey1", false, "Old Expo Keycard - EZ", "byItem"); // flag 14
     settings.Add("oldkey2", false, "Old Expo Keycard - Silver", "byItem"); // flag 15
-    settings.Add("walkie1", true, "Old Lab Walkie-Talkie", "byItem"); // flag 16
+    settings.Add("walkie1", true, "Old Expo Walkie-Talkie", "byItem"); // flag 16
     settings.Add("walkie2", false, "Surface Walkie-Talkie", "byItem"); // flag 17
     settings.SetToolTip("walkie2", "Only at bottom of chute.");
     settings.Add("nulldriver", true, "NULLDRIVER", "byItem"); // flag 20
@@ -53,8 +53,8 @@ startup
     settings.Add("arrow1", false, "Arrow 1", "byRoom"); // rArrow1, 128
     settings.Add("dumbbell1", false, "Dumbbell 1", "byRoom"); // rDumbbell1, 149
     settings.Add("slime1", false, "Slime 1", "byRoom"); // rSlime1, 166
-    settings.Add("oldExpo", false, "Old Expos", "byRoom"); // rHubOldExpos, 24 or flag13
-    settings.Add("oldLab1", false, "Old Lab - First Platforming Room", "byRoom"); // rOldLabArrow, 213
+    settings.Add("oldExpo", true, "Old Expo Hall", "byRoom"); // rHubOldExpos, 24 or flag13
+    settings.Add("oldLab1", false, "R&D - First Platforming Room", "byRoom"); // rOldLabArrow, 213
     settings.Add("glassBoss1Room", true, "Glass Boss 1", "byRoom"); // rGlass8, 54
     settings.Add("glassBoss2Room", true, "Glass Boss 2", "byRoom"); // rGlass11, 67
     settings.Add("gravMeteor", true, "Meteor Escape", "byRoom"); // rGravityH7, 123
@@ -81,13 +81,13 @@ startup
     settings.Add("postCreditsTitleCardB", true, "Split at Post-Credits Title Card (1.2.3+)", "namedEndingB"); // flag 35 (ty uber)
     settings.Add("namedEndingRoomB", false, "Split at Ending Label", "namedEndingB"); // rCredits3, 225
 
-    settings.Add("namedEndingC", false, "Ending C allowed", "splitEnd"); // flag 32 = 1
+    settings.Add("namedEndingC", true, "Ending C allowed", "splitEnd"); // flag 32 = 1
     settings.Add("creditsRoomC", false, "Split at Credits Room", "namedEndingC");
     settings.Add("postCreditsRoomC", false, "Split at Post-Credits Room", "namedEndingC");
     settings.Add("postCreditsTitleCardC", true, "Split at Post-Credits Title Card (1.2.3+)", "namedEndingC");
     settings.Add("namedEndingRoomC", false, "Split at Ending Label", "namedEndingC");
     
-    settings.Add("namedEndingD", false, "Ending D allowed", "splitEnd"); // flag 32 = 2
+    settings.Add("namedEndingD", true, "Ending D allowed", "splitEnd"); // flag 32 = 2
     settings.Add("creditsRoomD", false, "Split at Credits Room", "namedEndingD");
     settings.Add("postCreditsRoomD", false, "Split at Post-Credits Room", "namedEndingD");
     settings.Add("postCreditsTitleCardD", true, "Split at Post-Credits Title Card (1.2.3+)", "namedEndingD");
