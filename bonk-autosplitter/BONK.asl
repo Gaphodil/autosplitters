@@ -64,13 +64,56 @@ startup
     vars.roomCount = 14;
 
     // MISCELLANEA
-    settings.Add("byNullSecrets", true, "Split NULLDRIVER Switches"); // flags 3-8
+    settings.Add("byNullSecrets", false, "Split NULLDRIVER Switches"); // flags 3-8
     settings.SetToolTip("byNullSecrets", "Split on glitch room secret switches.");
+    string[] switchLocs = {"Nuclear", "Gym", "Gravity", "Slime", "Arrows", "Hub"};
+    for(int i = 3; i <= 8; i++)
+    {
+        var settingFlag = "nullFlag" + i;
+        var settingName = "NULLDRIVER Switch (" + switchLocs[i-3] + ")";
+        settings.Add(settingFlag, true, settingName, "byNullSecrets");
+    }
 
     settings.Add("murder", true, "Split on O's Death"); // flag 28
 
-    settings.Add("byRedCoin", false, "Split Red Coins");
-    settings.Add("byBlueCoin", false, "Split Blue Coins");
+    settings.Add("byRedCoin", false, "Split Red Coins"); // 0-19
+    settings.Add("byBlueCoin", false, "Split Blue Coins"); // 76-83
+    for(int i = 0; i <= 19; i++)
+    {
+        var settingFlag = "coin" + i;
+        var settingName = "Red Coin " + i;
+        switch (i) {
+            case 0: case 19:
+                settingName += " (Hub)"; break;
+            case 1:
+                settingName += " (Glass)"; break;
+            case 2:
+                settingName += " (Nuclear)"; break;
+            case 5:
+                settingName += " (Gravity 2)"; break;
+            case 6:
+                settingName += " (Gravity 1)"; break;
+            case 9:
+                settingName += " (Arrows)"; break;
+            case 12:
+                settingName += " (Gym)"; break;
+            case 14:
+                settingName += " (Slime)"; break;
+            default:
+                break;
+        }
+        settings.Add(settingFlag, true, settingName, "byRedCoin");
+    }
+    string[] blueLocs = {
+        "Nuclear", "Info - Gates", "Info - Arrows", "Glass - Bonk",
+        "Gravity", "Glass - Save", "Arrows", "Hub"
+    };
+    for(int i = 76; i <= 83; i++)
+    {
+        var settingFlag = "coin" + i;
+        var settingName = "Blue Coin " + i + " (" + blueLocs[i - 76] + ")";
+        settings.Add(settingFlag, true, settingName, "byBlueCoin");
+    }
 
     settings.Add("splitEnd", true, "Split for Ending");
     settings.SetToolTip("splitEnd", "Choose a final room to split in, and which ending is being gone for.");
@@ -233,7 +276,7 @@ split
     {
         for (int i = 3; i <= 8; i++)
         {
-            if (oldFlags[i] == 0 && newFlags[i] == 1 && !vars.noRepeatFlags[i])
+            if (settings["nullFlag" + i] && oldFlags[i] == 0 && newFlags[i] == 1 && !vars.noRepeatFlags[i])
             {
                 vars.noRepeatFlags[i] = true;
                 return true;
@@ -256,7 +299,7 @@ split
         {
             for (int i = 0; i <= 19; i++)
             {
-                if (oldCoins[i] == 0 && newCoins[i] == 1)
+                if (settings["coin" + i] && oldCoins[i] == 0 && newCoins[i] == 1)
                     return true;
             }
         }
@@ -264,7 +307,7 @@ split
         {
             for (int i = 76; i <= 83; i++)
             {
-                if (oldCoins[i] == 0 && newCoins[i] == 1)
+                if (settings["coin" + i] && oldCoins[i] == 0 && newCoins[i] == 1)
                     return true;
             }
         }
