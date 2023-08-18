@@ -48,12 +48,18 @@ start
         return true;
 }
 
+onStart
+{
+    vars.sceneVisited = new int[22];
+}
+
 split
 {
     for (int i = 0; i < vars.sceneNames.Length; i++)
     {
-        if (old.Scene != current.Scene && current.Scene == vars.sceneNames[i])
+        if (current.Scene == vars.sceneNames[i] && vars.sceneVisited[i] == 0)
         {
+            vars.sceneVisited[i] = 1;
             return true;
         }
     }
@@ -61,6 +67,6 @@ split
 
 reset
 {
-    if (current.Scene == "Title")
+    if (current.Scene != old.Scene && current.Scene == "Title")
         return true;
 }
