@@ -1,7 +1,9 @@
 state("BONK")
 {
-    // i've heard SignatureScanner can find current room by name but i don't know how it works
+    // the magic gamemaker numbers for SignatureScanner don't work for fangames :<
     int roomId : 0x6561E0;
+    // can't use ModuleMemorySize for version diff either
+    string16 version : 0x00445C40, 0x60, 0x10, 0x2EC, 0x0, 0x0, 0x0;
     
     double microseconds : 0x00445C40, 0x60, 0x10, 0x13C, 0x90;
     double seconds      : 0x00445C40, 0x60, 0x10, 0x13C, 0xA0;
@@ -137,6 +139,7 @@ startup
     settings.Add("namedEndingRoomD", false, "Split at Ending Label", "namedEndingD");
 
     settings.Add("jokeEnding", false, "Ending G allowed", "splitEnd"); // rDumbbellGym1Secret2, 154
+    settings.Add("jokeEnding2", false, "Ending P allowed (1.2.5+) (room only)", "splitEnd"); // rTutorialP3, 46
 
     // SPLITTER FUNCTIONALITY
 
@@ -164,13 +167,12 @@ startup
 
 start
 {
-    Array.Clear(vars.noRepeatItems, 0, 6);
-    Array.Clear(vars.noRepeatSlides, 0, 6);
-    Array.Clear(vars.noRepeatFlags, 0, 50);
-    Array.Clear(vars.noRepeatRooms, 0, vars.roomCount);
-
     if (old.roomId != 11 && current.roomId == 11) // rIntro1
     {
+        Array.Clear(vars.noRepeatItems, 0, 6);
+        Array.Clear(vars.noRepeatSlides, 0, 6);
+        Array.Clear(vars.noRepeatFlags, 0, 50);
+        Array.Clear(vars.noRepeatRooms, 0, vars.roomCount);
         return true;
     }
 }
@@ -187,6 +189,7 @@ split
     double[] newFlags  = vars.ConvertBytes(current.gameFlags);
     int oldRoom = old.roomId;
     int newRoom = current.roomId;
+    bool Ver125 = current.version == "1.2.5";
 
     if (settings["byItem"])
     {
@@ -260,6 +263,10 @@ split
     if (settings["byRoom"])
     {
         double[] rooms = new double[] { 46, 72, 103, 128, 149, 166,  24, 213, 54, 67, 123, 195, 200, 220 };
+        if (Ver125)
+        {
+            for (int i = 0; i < rooms.Length; i++) rooms[i] += 4;
+        }
         string[] roomOpts = new string[] { 
             "glass1", "nuclear1", "grav1", "arrow1", "dumbbell1", "slime1", "oldExpo", "oldLab1",
             "glassBoss1Room", "glassBoss2Room", "gravMeteor", "slimeCrab", "slimeCrab2", "oBoss" };
@@ -314,7 +321,12 @@ split
     }
     if (settings["splitEnd"])  
     {
-        if (settings["jokeEnding"] && oldRoom != 154 && newRoom == 154)
+        int endGRoom = Ver125 ? 158 : 154;
+        int endPRoom = 46; // the PManager is a local variable and idk how to get a consistent pointer
+        if (settings["jokeEnding"] && oldRoom != endGRoom && newRoom == endGRoom)
+            return true;
+        
+        if (Ver125 && settings["jokeEnding2"] && oldRoom != endPRoom && newRoom == endPRoom)
             return true;
         
         var ends = new string[] { "B", "C", "D" };
@@ -326,7 +338,8 @@ split
             {
                 for (int j = 0; j < endrooms.Length; j++)
                 {
-                    if (settings[endrooms[j] + ends[i]] && oldRoom != 223 + j && newRoom == 223 + j)
+                    int endRoom = Ver125 ? 227 : 223;
+                    if (settings[endrooms[j] + ends[i]] && oldRoom != endRoom + j && newRoom == endRoom + j)
                         return true;
                 }
                 if (settings["postCreditsTitleCard" + ends[i]] && oldFlags[35] == 0 && newFlags[35] == 1)
