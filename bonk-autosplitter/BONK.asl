@@ -143,17 +143,6 @@ startup
 
     // SPLITTER FUNCTIONALITY
 
-    // for not re-splitting if e.g. you die after collecting an item or before crab autosave
-    // red and blue coins are autosaved
-    bool[] noRepeatItems = new bool[6];
-    bool[] noRepeatSlides = new bool[6];
-    bool[] noRepeatFlags = new bool[50];
-    bool[] noRepeatRooms = new bool[vars.roomCount];
-    vars.noRepeatItems = noRepeatItems;
-    vars.noRepeatSlides = noRepeatSlides;
-    vars.noRepeatFlags = noRepeatFlags;
-    vars.noRepeatRooms = noRepeatRooms;
-
     // derived from https://stackoverflow.com/questions/7832120
     Func<byte[], double[]> ConvertBytes = data =>
     {
@@ -168,13 +157,17 @@ startup
 start
 {
     if (old.roomId != 11 && current.roomId == 11) // rIntro1
-    {
-        Array.Clear(vars.noRepeatItems, 0, 6);
-        Array.Clear(vars.noRepeatSlides, 0, 6);
-        Array.Clear(vars.noRepeatFlags, 0, 50);
-        Array.Clear(vars.noRepeatRooms, 0, vars.roomCount);
         return true;
-    }
+}
+
+onStart
+{
+    // for not re-splitting if e.g. you die after collecting an item or before crab autosave
+    // red and blue coins are autosaved
+    vars.noRepeatItems = new bool[6];
+    vars.noRepeatSlides = new bool[6];
+    vars.noRepeatFlags = new bool[50];
+    vars.noRepeatRooms = new bool[vars.roomCount];
 }
 
 reset
