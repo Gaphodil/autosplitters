@@ -85,7 +85,7 @@ split
 {
     for (int i = 0; i < vars.sceneNames.Length; i++)
     {
-        if (current.Scene == vars.sceneNames[i] && vars.sceneVisited[i] == 0)
+        if (current.Scene == vars.sceneNames[i] && vars.sceneVisited[i] == 0 && settings[vars.sceneNames[i]])
         {
             vars.sceneVisited[i] = 1;
             return true;
