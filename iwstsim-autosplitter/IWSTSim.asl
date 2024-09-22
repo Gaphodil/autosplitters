@@ -54,18 +54,19 @@ startup
     vars.rooms = rooms;
     int[] fbRooms = {94, 95, 97, 98};
     vars.fbRooms = fbRooms;
-
-    bool[] noRepeatsA = new bool[7];
-    bool[] noRepeatsB = new bool[7];
-    bool[] noRepeatsC = new bool[4];
-    vars.noRepeatsA = noRepeatsA;
-    vars.noRepeatsB = noRepeatsB;
-    vars.noRepeatsC = noRepeatsC;
 }
 
 start
 {
     return (old.roomId != 22 && current.roomId == 22); // rRunman_Intro
+}
+
+onStart
+{
+    // for not re-splitting if e.g. you die after collecting an item
+    vars.noRepeatsA = new bool[7]; // transitions
+    vars.noRepeatsB = new bool[7]; // boss rooms
+    vars.noRepeatsC = new bool[4]; // final boss rooms
 }
 
 reset
